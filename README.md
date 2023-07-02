@@ -1,1 +1,2 @@
 # calculator
+Hi, everyone! This is going to be the most challenging project I have done so far. This project is gonna put all of my knowledge of HTML, CSS, and Javascript to the test. I am excited to get started! Bismillah.
