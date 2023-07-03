@@ -11,6 +11,7 @@ let secondNum =
 let operator = '';
 
 const displayText = document.querySelector('.display-text');
+displayText.textContent = '0';
 
 const operatorKeys = document.querySelectorAll('.operator');
 operatorKeys.forEach(key => key.addEventListener('click', setOperator));
@@ -37,7 +38,7 @@ decimalKey.addEventListener('click', () =>
         secondNum.value += '.';
         secondNum.isDecimal = true;
     }
-    display();
+    display(`${firstNum.value} ${operator} ${secondNum.value}`);
 })
 
 const equalsKey = document.querySelector('.equals');
@@ -56,11 +57,16 @@ function setOperator(key)
 
     if (!firstNum.value)
     {
-        console.log('Please enter a number before the operator.');
+        display('Please enter a number before the operator.');
         return;
     }
     operator = key.target.getAttribute('data-key');
-    display();
+    if (operator == '*')
+    operator = '×';
+    else if (operator == '/')
+    operator = '÷';
+    
+    display(`${firstNum.value} ${operator} ${secondNum.value}`);
 }
 
 function setNumber(key)
@@ -80,7 +86,7 @@ function setNumber(key)
         else
         secondNum.value += dataKey;
     }
-    display();
+    display(`${firstNum.value} ${operator} ${secondNum.value}`);
 }
 
 function operate()
@@ -101,22 +107,29 @@ function operate()
             firstNum.value = subtract(firstNum.value, secondNum.value).toString();
         break;
 
-        case '*':
+        case '×':
             firstNum.value = multiply(firstNum.value, secondNum.value).toString();
         break;
 
-        case '/':
-            firstNum.value = divide(firstNum.value, secondNum.value).toString();
+        case '÷':
+            if (secondNum.value == 0)
+            {
+                secondNum.value = '';
+                display('Cannot divide by zero!');
+                return;
+            }
+
+            firstNum.value = divide(firstNum.value, secondNum.value);
         break;
     }
     secondNum.value = '';
     operator = '';
-    display();
+    display(`${firstNum.value} ${operator} ${secondNum.value}`);
 }
 
-function display()
+function display(string)
 {
-    displayText.textContent = `${firstNum.value} ${operator} ${secondNum.value}`;
+    displayText.textContent = string;
 }
 
 function backspace()
@@ -138,8 +151,13 @@ function backspace()
         firstNum.isDecimal = false;
 
         firstNum.value = firstNum.value.slice(0, -1);
+        if (firstNum.value == '')
+        {
+            display('0');
+            return;
+        }
     }
-    display();
+    display(`${firstNum.value} ${operator} ${secondNum.value}`);
 }
 
 function clear()
@@ -147,7 +165,7 @@ function clear()
     firstNum.value = '';
     secondNum.value = '';
     operator = '';
-    displayText.textContent = '';
+    display('0');
 }
 
 function add(a, b)
