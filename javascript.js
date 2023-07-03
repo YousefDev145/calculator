@@ -27,13 +27,15 @@ decimalKey.addEventListener('click', () =>
         firstNum.value = 0;
         
         firstNum.value += '.';
+        firstNum.isDecimal = true;
     }
-    else if (!secondNum.isDecimal)
+    else if (!secondNum.isDecimal && operator)
     {
         if (!secondNum.value)
         secondNum.value = 0;
 
         secondNum.value += '.';
+        secondNum.isDecimal = true;
     }
     display();
 })
@@ -49,6 +51,9 @@ clearKey.addEventListener('click', clear)
 
 function setOperator(key)
 {
+    if (firstNum.value && operator && secondNum.value)
+    operate();
+
     if (!firstNum.value)
     {
         console.log('Please enter a number before the operator.');
@@ -89,19 +94,19 @@ function operate()
     switch (operator)
     {
         case '+':
-            firstNum.value = add(firstNum.value, secondNum.value);
+            firstNum.value = add(firstNum.value, secondNum.value).toString();
         break;
 
         case '-':
-            console.log(subtract(firstNum.value, secondNum.value));
+            firstNum.value = subtract(firstNum.value, secondNum.value).toString();
         break;
 
         case '*':
-            console.log(multiply(firstNum.value, secondNum.value));
+            firstNum.value = multiply(firstNum.value, secondNum.value).toString();
         break;
 
         case '/':
-            console.log(divide(firstNum.value, secondNum.value));
+            firstNum.value = divide(firstNum.value, secondNum.value).toString();
         break;
     }
     secondNum.value = '';
@@ -118,6 +123,9 @@ function backspace()
 {
     if (secondNum.value)
     {
+        if (secondNum.value.slice(-1) == '.')
+        secondNum.isDecimal = false;
+
         secondNum.value = secondNum.value.slice(0, -1);
     }
     else if (operator)
@@ -126,6 +134,9 @@ function backspace()
     }
     else
     {
+        if (firstNum.value.slice(-1) == '.')
+        firstNum.isDecimal = false;
+
         firstNum.value = firstNum.value.slice(0, -1);
     }
     display();
