@@ -5,23 +5,24 @@
 
 body
 {
-    background-color: #27374D;
+    background-color: #FCFC62;
     font-family: 'Courier New', Courier, monospace;
     font-size: 25px;
     font-weight: 700;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
 }
 
 .calc
 {
-    width: 500px;
-    height: 600px;
+    width: 450px;
+    height: 550px;
     padding: 20px;
     border-radius: 15px;
     box-shadow: 5px 5px 5px rgb(0, 0, 0, .5);
-    background-color: #526D82;
+    background-color: #464D77;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -32,6 +33,7 @@ body
 {
     padding: 10px;
     border-radius: 25px;
+    margin-bottom: 20px;
     box-shadow: 5px 5px 3px 2px rgb(0, 0, 0, .2) inset;
     background-color: #9DB2BF;
     font-size: 30px;
@@ -59,7 +61,19 @@ button
     flex: 1;
 }
 
+.decimal
+{
+    font-size: 30px;
+}
+
 .backspace, .equals
 {
     flex: 2;
+}
+
+footer
+{
+    color: #B97375;
+    margin-top: 40px;
+    font-size: 20px;
 }
