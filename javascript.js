@@ -1,6 +1,6 @@
 let firstNum =
 {
-    value: '',
+    value: 0,
     isDecimal: false,
     digits: 0
 };
@@ -27,7 +27,7 @@ decimalKey.addEventListener('click', () =>
 {
     if (!firstNum.isDecimal && !(operator && secondNum.value))
     {
-        if (!firstNum.value || pressedEquals)
+        if (firstNum.value == 0 || pressedEquals)
         {
             firstNum.value = 0;
             firstNum.digits = 1;
@@ -57,9 +57,12 @@ const equalsKey = document.querySelector('.equals');
 equalsKey.addEventListener('click', () =>
 {
     operate();
-    pressedEquals = true;
-    firstNum.isDecimal = false;
-    firstNum.digits = 0;
+    if (firstNum.value && operator && secondNum.value)
+    {
+        pressedEquals = true;
+        firstNum.isDecimal = false;
+        firstNum.digits = 0;
+    }
 });
 
 const backspaceKey = document.querySelector('.backspace');
@@ -76,11 +79,6 @@ function setOperator(key)
     if (secondNum.digits + firstNum.digits > 16)
     return;
 
-    if (!firstNum.value)
-    {
-        display('Please enter a number before the operator.');
-        return;
-    }
     operator = key.target.getAttribute('data-key');
     if (operator == '*')
     operator = '×';
@@ -98,7 +96,7 @@ function setNumber(key)
         if (firstNum.digits >= 16)
         return;
 
-        if (!firstNum.value || pressedEquals)
+        if (firstNum.value == 0 || pressedEquals)
         {
             firstNum.value = dataKey;
             firstNum.digits = 1;
@@ -139,7 +137,7 @@ function setNumber(key)
 
 function operate()
 {
-    if (!(firstNum.value && operator && secondNum.value))
+    if (!((firstNum.value || firstNum.value == 0) && operator && secondNum.value))
     return;
 
     firstNum.value = +firstNum.value;
@@ -202,7 +200,7 @@ function backspace()
         firstNum.value = firstNum.value.slice(0, -1);
         if (firstNum.value == '')
         {
-            firstNum.value = '0';
+            firstNum.value = 0;
             display(`${firstNum.value} ${operator} ${secondNum.value}`);
             return;
         }
@@ -213,7 +211,7 @@ function backspace()
 
 function clear()
 {
-    firstNum.value = '';
+    firstNum.value = 0;
     firstNum.isDecimal = false;
     firstNum.digits = 0;
     secondNum.value = '';
@@ -221,7 +219,7 @@ function clear()
     secondNum.digits = 0;
     operator = '';
     pressedEquals = false;
-    display('0');
+    display(`${firstNum.value} ${operator} ${secondNum.value}`);
 }
 
 function add(a, b)
