@@ -66,6 +66,11 @@ button
     flex: 1;
 }
 
+.operator
+{
+    background-color: #FCFC62;
+}
+
 .decimal
 {
     font-size: 30px;
@@ -74,6 +79,11 @@ button
 .backspace, .equals
 {
     flex: 2;
+}
+
+.equals
+{
+    background-color: #B97375;
 }
 
 footer
