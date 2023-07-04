@@ -14,7 +14,7 @@ let operator = '';
 let pressedEquals = false;
 
 const displayText = document.querySelector('.display-text');
-displayText.textContent = '0';
+displayText.textContent = firstNum.value;
 
 const operatorKeys = document.querySelectorAll('.operator');
 operatorKeys.forEach(key => key.addEventListener('click', setOperator));
@@ -73,7 +73,7 @@ clearKey.addEventListener('click', clear)
 
 function setOperator(key)
 {
-    if (firstNum.value && operator && secondNum.value)
+    if ((firstNum.value || firstNum.value == 0) && operator && secondNum.value)
     operate();
 
     if (secondNum.digits + firstNum.digits > 16)
