@@ -1,20 +1,20 @@
 let firstNum =
 {
     value: 0,
-    isDecimal: false,
+    hasDecimal: false,
     digits: 0
 };
 let secondNum =
 {
     value: '',
-    isDecimal: false,
+    hasDecimal: false,
     digits: 0
 };
 let operator = '';
 let pressedEquals = false;
 
 const displayText = document.querySelector('.display-text');
-displayText.textContent = firstNum.value;
+displayText.textContent = 0;
 
 const operatorKeys = document.querySelectorAll('.operator');
 operatorKeys.forEach(key => key.addEventListener('click', setOperator));
@@ -25,7 +25,7 @@ numberKeys.forEach(key => key.addEventListener('click', setNumber));
 const decimalKey = document.querySelector('.decimal');
 decimalKey.addEventListener('click', () =>
 {
-    if (!firstNum.isDecimal && !(operator && secondNum.value))
+    if (!firstNum.hasDecimal && !(operator && secondNum.value))
     {
         if (firstNum.value == 0 || pressedEquals)
         {
@@ -35,10 +35,10 @@ decimalKey.addEventListener('click', () =>
         }
         
         firstNum.value += '.';
-        firstNum.isDecimal = true;
+        firstNum.hasDecimal = true;
         firstNum.digits++;
     }
-    else if (!secondNum.isDecimal && operator)
+    else if (!secondNum.hasDecimal && operator)
     {
         if (!secondNum.value)
         {
@@ -47,7 +47,7 @@ decimalKey.addEventListener('click', () =>
         }
 
         secondNum.value += '.';
-        secondNum.isDecimal = true;
+        secondNum.hasDecimal = true;
         secondNum.digits++;
     }
     display(`${firstNum.value} ${operator} ${secondNum.value}`);
@@ -60,7 +60,7 @@ equalsKey.addEventListener('click', () =>
     if (firstNum.value && operator && secondNum.value)
     {
         pressedEquals = true;
-        firstNum.isDecimal = false;
+        firstNum.hasDecimal = false;
         firstNum.digits = 0;
     }
 });
@@ -146,15 +146,15 @@ function operate()
     switch (operator)
     {
         case '+':
-            firstNum.value = add(firstNum.value, secondNum.value).toString();
+            firstNum.value = parseFloat(add(firstNum.value, secondNum.value).toFixed(14));
         break;
 
         case '-':
-            firstNum.value = subtract(firstNum.value, secondNum.value).toString();
+            firstNum.value = parseFloat(subtract(firstNum.value, secondNum.value).toFixed(14));
         break;
 
         case '×':
-            firstNum.value = multiply(firstNum.value, secondNum.value).toString();
+            firstNum.value = parseFloat(multiply(firstNum.value, secondNum.value).toFixed(14));
         break;
 
         case '÷':
@@ -165,7 +165,7 @@ function operate()
                 return;
             }
 
-            firstNum.value = divide(firstNum.value, secondNum.value);
+            firstNum.value = parseFloat(divide(firstNum.value, secondNum.value).toFixed(14));
         break;
     }
     secondNum.value = '';
@@ -183,7 +183,7 @@ function backspace()
     if (secondNum.value)
     {
         if (secondNum.value.slice(-1) == '.')
-        secondNum.isDecimal = false;
+        secondNum.hasDecimal = false;
 
         secondNum.value = secondNum.value.slice(0, -1);
         secondNum.digits--;
@@ -195,7 +195,7 @@ function backspace()
     else
     {
         if (firstNum.value.slice(-1) == '.')
-        firstNum.isDecimal = false;
+        firstNum.hasDecimal = false;
 
         firstNum.value = firstNum.value.slice(0, -1);
         if (firstNum.value == '')
@@ -212,10 +212,10 @@ function backspace()
 function clear()
 {
     firstNum.value = 0;
-    firstNum.isDecimal = false;
+    firstNum.hasDecimal = false;
     firstNum.digits = 0;
     secondNum.value = '';
-    secondNum.isDecimal = false;
+    secondNum.hasDecimal = false;
     secondNum.digits = 0;
     operator = '';
     pressedEquals = false;
