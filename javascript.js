@@ -1,14 +1,17 @@
 let firstNum =
 {
     value: '',
-    isDecimal: false
+    isDecimal: false,
+    digits: 0
 };
 let secondNum =
 {
     value: '',
-    isDecimal: false
+    isDecimal: false,
+    digits: 0
 };
 let operator = '';
+let pressedEquals = false;
 
 const displayText = document.querySelector('.display-text');
 displayText.textContent = '0';
@@ -24,25 +27,40 @@ decimalKey.addEventListener('click', () =>
 {
     if (!firstNum.isDecimal && !(operator && secondNum.value))
     {
-        if (!firstNum.value)
-        firstNum.value = 0;
+        if (!firstNum.value || pressedEquals)
+        {
+            firstNum.value = 0;
+            firstNum.digits = 1;
+            pressedEquals = false;
+        }
         
         firstNum.value += '.';
         firstNum.isDecimal = true;
+        firstNum.digits++;
     }
     else if (!secondNum.isDecimal && operator)
     {
         if (!secondNum.value)
-        secondNum.value = 0;
+        {
+            secondNum.value = 0;
+            secondNum.digits = 1;
+        }
 
         secondNum.value += '.';
         secondNum.isDecimal = true;
+        secondNum.digits++;
     }
     display(`${firstNum.value} ${operator} ${secondNum.value}`);
 })
 
 const equalsKey = document.querySelector('.equals');
-equalsKey.addEventListener('click', operate);
+equalsKey.addEventListener('click', () =>
+{
+    operate();
+    pressedEquals = true;
+    firstNum.isDecimal = false;
+    firstNum.digits = 0;
+});
 
 const backspaceKey = document.querySelector('.backspace');
 backspaceKey.addEventListener('click', backspace);
@@ -54,6 +72,9 @@ function setOperator(key)
 {
     if (firstNum.value && operator && secondNum.value)
     operate();
+
+    if (secondNum.digits + firstNum.digits > 16)
+    return;
 
     if (!firstNum.value)
     {
@@ -74,17 +95,44 @@ function setNumber(key)
     let dataKey = key.target.getAttribute('data-key');
     if (!operator)
     {
-        if (!firstNum.value)
-        firstNum.value = dataKey;
+        if (firstNum.digits >= 16)
+        return;
+
+        if (!firstNum.value || pressedEquals)
+        {
+            firstNum.value = dataKey;
+            firstNum.digits = 1;
+            pressedEquals = false;
+        }
+        else if (firstNum.value == '0')
+        {
+            if (dataKey !== '0')
+            {
+                firstNum.value = dataKey;
+                firstNum.digits = 1;
+            }
+        }
         else
-        firstNum.value += dataKey;
+        {
+            firstNum.value += dataKey;
+            firstNum.digits++;
+        }
     }
     else
     {
+        if (secondNum.digits + firstNum.digits >= 16)
+        return;
+
         if (!secondNum.value)
-        secondNum.value = dataKey;
+        {
+            secondNum.value = dataKey;
+            secondNum.digits = 1;
+        }
         else
-        secondNum.value += dataKey;
+        {
+            secondNum.value += dataKey;
+            secondNum.digits++;
+        }
     }
     display(`${firstNum.value} ${operator} ${secondNum.value}`);
 }
@@ -140,6 +188,7 @@ function backspace()
         secondNum.isDecimal = false;
 
         secondNum.value = secondNum.value.slice(0, -1);
+        secondNum.digits--;
     }
     else if (operator)
     {
@@ -153,9 +202,11 @@ function backspace()
         firstNum.value = firstNum.value.slice(0, -1);
         if (firstNum.value == '')
         {
-            display('0');
+            firstNum.value = '0';
+            display(`${firstNum.value} ${operator} ${secondNum.value}`);
             return;
         }
+        firstNum.digits--;
     }
     display(`${firstNum.value} ${operator} ${secondNum.value}`);
 }
@@ -163,8 +214,13 @@ function backspace()
 function clear()
 {
     firstNum.value = '';
+    firstNum.isDecimal = false;
+    firstNum.digits = 0;
     secondNum.value = '';
+    secondNum.isDecimal = false;
+    secondNum.digits = 0;
     operator = '';
+    pressedEquals = false;
     display('0');
 }
 
