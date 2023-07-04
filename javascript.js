@@ -12,60 +12,51 @@ let secondNum =
     digits: 0
 };
 let operator = '';
+let pressedKey = false;
 
 const displayText = document.querySelector('.display-text');
 displayText.textContent = '0';
 
 const operatorKeys = document.querySelectorAll('.operator');
-operatorKeys.forEach(key => key.addEventListener('click', setOperator));
+operatorKeys.forEach(key => key.addEventListener('click', key =>
+{
+    pressedKey = false;
+    setOperator(key);
+}));
 
 const numberKeys = document.querySelectorAll('.number');
-numberKeys.forEach(key => key.addEventListener('click', setNumber));
+numberKeys.forEach(key => key.addEventListener('click', key =>
+{
+    pressedKey = false;
+    setNumber(key);
+}));
 
 const decimalKey = document.querySelector('.decimal');
-decimalKey.addEventListener('click', () =>
-{
-    if (!firstNum.hasDecimal && !(operator && secondNum.value))
-    {
-        if (firstNum.value == '0')
-        firstNum.digits = 1;
-        
-        firstNum.value += '.';
-        firstNum.digits++;
-    }
-    else if (!secondNum.hasDecimal && operator)
-    {
-        if (!secondNum.value)
-        {
-            secondNum.value = '0';
-            secondNum.digits = 1;
-        }
-
-        secondNum.value += '.';
-        secondNum.digits++;
-    }
-    firstNum.hasDecimal = firstNum.value.toString().includes('.');
-    secondNum.hasDecimal = secondNum.value.includes('.');
-    display(`${firstNum.value} ${operator} ${secondNum.value}`);
-})
+decimalKey.addEventListener('click', putDecimal)
 
 const equalsKey = document.querySelector('.equals');
-equalsKey.addEventListener('click', () =>
-{
-    if ((firstNum.value || firstNum.value == '0') && operator && secondNum.value)
-    {
-        firstNum.isAnswer = true;
-        operate();
-    }
-    else
-    operate();
-});
+equalsKey.addEventListener('click', equals);
 
 const backspaceKey = document.querySelector('.backspace');
 backspaceKey.addEventListener('click', backspace);
 
 const clearKey = document.querySelector('.clear');
 clearKey.addEventListener('click', clear)
+
+window.addEventListener('keydown', execute);
+
+function execute(e)
+{
+    pressedKey = true;
+    if(/[0-9]/.test(e.key))
+    setNumber(document.querySelector(`.number[data-key="${e.key}"`));
+    else if (/[+-.*./]/.test(e.key))
+    setOperator(document.querySelector(`.operator[data-key="${e.key}"`));
+    else if (e.key == 'Enter')
+    equals();
+    else if (e.key == 'Backspace')
+    backspace();
+}
 
 function setOperator(key)
 {
@@ -75,7 +66,7 @@ function setOperator(key)
     if ((firstNum.value || firstNum.value == 0) && operator && secondNum.value)
     operate();
 
-    operator = key.target.getAttribute('data-key');
+    operator = pressedKey ? key.getAttribute('data-key') : key.target.getAttribute('data-key');
     if (operator == '*')
     operator = '×';
     else if (operator == '/')
@@ -89,7 +80,7 @@ function setNumber(key)
     if (firstNum.isAnswer)
     clear();
 
-    let dataKey = key.target.getAttribute('data-key');
+    let dataKey = pressedKey ? key.getAttribute('data-key') : key.target.getAttribute('data-key');
     if (!operator)
     {
         if (firstNum.digits >= 16)
@@ -123,6 +114,43 @@ function setNumber(key)
         }
     }
     display(`${firstNum.value} ${operator} ${secondNum.value}`);
+}
+
+function putDecimal()
+{
+    if (!firstNum.hasDecimal && !(operator && secondNum.value))
+    {
+        if (firstNum.value == '0')
+        firstNum.digits = 1;
+        
+        firstNum.value += '.';
+        firstNum.digits++;
+    }
+    else if (!secondNum.hasDecimal && operator)
+    {
+        if (!secondNum.value)
+        {
+            secondNum.value = '0';
+            secondNum.digits = 1;
+        }
+
+        secondNum.value += '.';
+        secondNum.digits++;
+    }
+    firstNum.hasDecimal = firstNum.value.toString().includes('.');
+    secondNum.hasDecimal = secondNum.value.includes('.');
+    display(`${firstNum.value} ${operator} ${secondNum.value}`);
+}
+
+function equals()
+{
+    if ((firstNum.value || firstNum.value == '0') && operator && secondNum.value)
+    {
+        firstNum.isAnswer = true;
+        operate();
+    }
+    else
+    operate();
 }
 
 function operate()
