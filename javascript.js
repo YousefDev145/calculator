@@ -1,8 +1,9 @@
 let firstNum =
 {
-    value: 0,
+    value: '0',
     hasDecimal: false,
-    digits: 0
+    digits: 0,
+    isAnswer: false
 };
 let secondNum =
 {
@@ -11,10 +12,9 @@ let secondNum =
     digits: 0
 };
 let operator = '';
-let pressedEquals = false;
 
 const displayText = document.querySelector('.display-text');
-displayText.textContent = 0;
+displayText.textContent = '0';
 
 const operatorKeys = document.querySelectorAll('.operator');
 operatorKeys.forEach(key => key.addEventListener('click', setOperator));
@@ -27,42 +27,38 @@ decimalKey.addEventListener('click', () =>
 {
     if (!firstNum.hasDecimal && !(operator && secondNum.value))
     {
-        if (firstNum.value == 0 || pressedEquals)
-        {
-            firstNum.value = 0;
-            firstNum.digits = 1;
-            pressedEquals = false;
-        }
+        if (firstNum.value == '0')
+        firstNum.digits = 1;
         
         firstNum.value += '.';
-        firstNum.hasDecimal = true;
         firstNum.digits++;
     }
     else if (!secondNum.hasDecimal && operator)
     {
         if (!secondNum.value)
         {
-            secondNum.value = 0;
+            secondNum.value = '0';
             secondNum.digits = 1;
         }
 
         secondNum.value += '.';
-        secondNum.hasDecimal = true;
         secondNum.digits++;
     }
+    firstNum.hasDecimal = firstNum.value.toString().includes('.');
+    secondNum.hasDecimal = secondNum.value.includes('.');
     display(`${firstNum.value} ${operator} ${secondNum.value}`);
 })
 
 const equalsKey = document.querySelector('.equals');
 equalsKey.addEventListener('click', () =>
 {
-    operate();
-    if (firstNum.value && operator && secondNum.value)
+    if ((firstNum.value || firstNum.value == '0') && operator && secondNum.value)
     {
-        pressedEquals = true;
-        firstNum.hasDecimal = false;
-        firstNum.digits = 0;
+        firstNum.isAnswer = true;
+        operate();
     }
+    else
+    operate();
 });
 
 const backspaceKey = document.querySelector('.backspace');
@@ -73,11 +69,11 @@ clearKey.addEventListener('click', clear)
 
 function setOperator(key)
 {
+    if (firstNum.isAnswer)
+    firstNum.isAnswer = false;
+
     if ((firstNum.value || firstNum.value == 0) && operator && secondNum.value)
     operate();
-
-    if (secondNum.digits + firstNum.digits > 16)
-    return;
 
     operator = key.target.getAttribute('data-key');
     if (operator == '*')
@@ -90,25 +86,19 @@ function setOperator(key)
 
 function setNumber(key)
 {
+    if (firstNum.isAnswer)
+    clear();
+
     let dataKey = key.target.getAttribute('data-key');
     if (!operator)
     {
         if (firstNum.digits >= 16)
         return;
 
-        if (firstNum.value == 0 || pressedEquals)
+        if (firstNum.value == '0')
         {
             firstNum.value = dataKey;
             firstNum.digits = 1;
-            pressedEquals = false;
-        }
-        else if (firstNum.value == '0')
-        {
-            if (dataKey !== '0')
-            {
-                firstNum.value = dataKey;
-                firstNum.digits = 1;
-            }
         }
         else
         {
@@ -118,7 +108,7 @@ function setNumber(key)
     }
     else
     {
-        if (secondNum.digits + firstNum.digits >= 16)
+        if (secondNum.digits + firstNum.digits >= 17)
         return;
 
         if (!secondNum.value)
@@ -137,7 +127,7 @@ function setNumber(key)
 
 function operate()
 {
-    if (!((firstNum.value || firstNum.value == 0) && operator && secondNum.value))
+    if (!((firstNum.value || firstNum.value == '0') && operator && secondNum.value))
     return;
 
     firstNum.value = +firstNum.value;
@@ -158,9 +148,10 @@ function operate()
         break;
 
         case '÷':
-            if (secondNum.value == 0)
+            if (secondNum.value == '0')
             {
                 secondNum.value = '';
+                clear();
                 display('Cannot divide by zero!');
                 return;
             }
@@ -168,9 +159,28 @@ function operate()
             firstNum.value = parseFloat(divide(firstNum.value, secondNum.value).toFixed(14));
         break;
     }
+    firstNum.hasDecimal = firstNum.value.toString().includes('.');
+    firstNum.digits = getDigits(firstNum.value);
     secondNum.value = '';
+    secondNum.hasDecimal = false;
+    secondNum.digits = 0;
     operator = '';
     display(`${firstNum.value} ${operator} ${secondNum.value}`);
+    if (firstNum.digits > 16)
+    {
+        clear();
+        display('Too large!');
+    }
+}
+
+function getDigits(number)
+{
+    let digits = 0;
+    for (i = 0; i < number.toString().length; i++)
+    {
+        digits++;
+    }
+    return digits;
 }
 
 function display(string)
@@ -182,10 +192,7 @@ function backspace()
 {
     if (secondNum.value)
     {
-        if (secondNum.value.slice(-1) == '.')
-        secondNum.hasDecimal = false;
-
-        secondNum.value = secondNum.value.slice(0, -1);
+        secondNum.value = secondNum.value.toString().slice(0, -1);
         secondNum.digits--;
     }
     else if (operator)
@@ -194,18 +201,18 @@ function backspace()
     }
     else
     {
-        if (firstNum.value.slice(-1) == '.')
-        firstNum.hasDecimal = false;
+        if (firstNum.isAnswer)
+        clear();
 
-        firstNum.value = firstNum.value.slice(0, -1);
+        firstNum.value = firstNum.value.toString().slice(0, -1);
+
         if (firstNum.value == '')
-        {
-            firstNum.value = 0;
-            display(`${firstNum.value} ${operator} ${secondNum.value}`);
-            return;
-        }
+        firstNum.value = 0;
+
         firstNum.digits--;
     }
+    firstNum.hasDecimal = firstNum.value.toString().includes('.');
+    secondNum.hasDecimal = secondNum.value.toString().includes('.');
     display(`${firstNum.value} ${operator} ${secondNum.value}`);
 }
 
@@ -214,11 +221,11 @@ function clear()
     firstNum.value = 0;
     firstNum.hasDecimal = false;
     firstNum.digits = 0;
+    firstNum.isAnswer = false;
     secondNum.value = '';
     secondNum.hasDecimal = false;
     secondNum.digits = 0;
     operator = '';
-    pressedEquals = false;
     display(`${firstNum.value} ${operator} ${secondNum.value}`);
 }
 
