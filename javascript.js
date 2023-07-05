@@ -18,30 +18,30 @@ const displayText = document.querySelector('.display-text');
 displayText.textContent = '0';
 
 const operatorKeys = document.querySelectorAll('.operator');
-operatorKeys.forEach(key => key.addEventListener('click', key =>
+operatorKeys.forEach(key => key.addEventListener('mousedown', key =>
 {
     pressedKey = false;
     setOperator(key);
 }));
 
 const numberKeys = document.querySelectorAll('.number');
-numberKeys.forEach(key => key.addEventListener('click', key =>
+numberKeys.forEach(key => key.addEventListener('mousedown', key =>
 {
     pressedKey = false;
     setNumber(key);
 }));
 
 const decimalKey = document.querySelector('.decimal');
-decimalKey.addEventListener('click', putDecimal)
+decimalKey.addEventListener('mousedown', putDecimal)
 
 const equalsKey = document.querySelector('.equals');
-equalsKey.addEventListener('click', equals);
+equalsKey.addEventListener('mousedown', equals);
 
 const backspaceKey = document.querySelector('.backspace');
-backspaceKey.addEventListener('click', backspace);
+backspaceKey.addEventListener('mousedown', backspace);
 
 const clearKey = document.querySelector('.clear');
-clearKey.addEventListener('click', clear)
+clearKey.addEventListener('mousedown', clear)
 
 window.addEventListener('keydown', execute);
 
