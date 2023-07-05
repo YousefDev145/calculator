@@ -64,7 +64,11 @@ function setOperator(key)
     firstNum.isAnswer = false;
 
     if ((firstNum.value || firstNum.value == 0) && operator && secondNum.value)
-    operate();
+    {
+        if (firstNum.value == 0)
+        firstNum.digits = 1;
+        operate();
+    }
 
     operator = pressedKey ? key.getAttribute('data-key') : key.target.getAttribute('data-key');
     if (operator == '*')
@@ -118,7 +122,7 @@ function setNumber(key)
 
 function putDecimal()
 {
-    if (!firstNum.hasDecimal && !(operator && secondNum.value))
+    if (!firstNum.hasDecimal && !(operator || secondNum.value))
     {
         if (firstNum.value == '0')
         firstNum.digits = 1;
