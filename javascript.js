@@ -51,10 +51,7 @@ function execute(e)
     if(/[0-9]/.test(e.key))
     setNumber(document.querySelector(`.number[data-key="${e.key}"`));
     else if (e.key == '+' || e.key == '-' || e.key == '*' || e.key == '/')
-    {
-        console.log('hello!');
-        setOperator(document.querySelector(`.operator[data-key="${e.key}"`));
-    }
+    setOperator(document.querySelector(`.operator[data-key="${e.key}"`));
     else if (e.key == '.')
     putDecimal();
     else if (e.key == 'Enter' || e.key == '=')
